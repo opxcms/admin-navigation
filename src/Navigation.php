@@ -37,7 +37,7 @@ class Navigation extends BaseModule
         $moduleList = $this->getModuleNavigationList();
         $favorites = $this->getSystemFavorites();
 
-        return array_merge_recursive($favorites, $moduleList, $systemList);
+        return $this->cleanUpEmptySections(array_merge_recursive($favorites, $moduleList, $systemList));
     }
 
     /**
@@ -113,7 +113,7 @@ class Navigation extends BaseModule
             }
         }
 
-        return $this->cleanUpEmptySections(array_merge_recursive(...$navigation));
+        return array_merge_recursive(...$navigation);
     }
 
     /**
@@ -187,7 +187,7 @@ class Navigation extends BaseModule
             return [];
         }
 
-        $usedSections = [];
+        $usedSections = ['system/favorites'];
 
         foreach ($navigation['items'] as $item) {
             if (isset($item['section']) && !in_array($item['section'], $usedSections, true)) {
