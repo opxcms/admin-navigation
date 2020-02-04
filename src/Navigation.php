@@ -113,7 +113,7 @@ class Navigation extends BaseModule
             }
         }
 
-        return array_merge_recursive(...$navigation);
+        return $this->cleanUpEmptySections(array_merge_recursive(...$navigation));
     }
 
     /**
@@ -172,6 +172,32 @@ class Navigation extends BaseModule
             empty($items) ? [] : ['items' => $items],
             empty($routes) ? [] : ['routes' => $routes]
         );
+    }
+
+    /**
+     * Cleanup unused sections.
+     *
+     * @param array $navigation
+     *
+     * @return  array
+     */
+    protected function cleanUpEmptySections(array $navigation): array
+    {
+        if (empty($navigation['items'])) {
+            return [];
+        }
+
+        $usedSections = [];
+
+        foreach ($navigation['items'] as $item) {
+            if (isset($item['section']) && !in_array($item['section'], $usedSections, true)) {
+                $usedSections[] = $item['section'];
+            }
+        }
+
+        $navigation['sections'] = array_intersect_key($navigation['sections'], array_flip($usedSections));
+
+        return $navigation;
     }
 
     /**
